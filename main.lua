@@ -14,8 +14,6 @@ end
 local addToGrid = function(object)
     -- witch grid box would it fall into
     local gridCords = getGridCoordinate(object.x, object.y)
-    -- gridCords.x = math.floor((object.x - gridLocalOrigin.x) / gridBoxSize)
-    -- gridCords.y = math.floor((object.y - gridLocalOrigin.y) / gridBoxSize)
     -- create the grid box if it does not exist
     if (grid[gridCords.x] == nil) then
         grid[gridCords.x] = {}
@@ -29,9 +27,6 @@ local addToGrid = function(object)
     grid[gridCords.x].size = grid[gridCords.x].size + 1
     -- remember which grid box the object is in
     object.gridCords = gridCords
-    -- local test = display.newRect((gridCords.x + 0.5) * gridBoxSize, (gridCords.y + 0.5) * gridBoxSize, gridBoxSize,
-    --     gridBoxSize)
-    -- test:setFillColor(0.9, 0.8, 0.6)
 end
 local removeFromGrid = function(object)
     -- which grid box is it in
@@ -80,7 +75,6 @@ local findInGrid = function(returnType, x, y, width, height, object, type)
                     local thisItem = grid[row][col][i]
                     if (type == nil) then
                         if (object == nil) then
-                            print("test")
                             -- return all if nothing specified
                             foundItems[#foundItems + 1] = thisItem
                             found = true
@@ -113,30 +107,8 @@ background.y = display.contentCenterY
 local home = display.newCircle(backGroup, display.contentCenterX, display.contentCenterY, 20)
 home:setFillColor(0.3, 0, 0.1)
 addToGrid(home)
--- print("grid")
--- for k, v in pairs(grid) do
---     if (type(v) == "table") then
---         print(k)
---         print("{")
---         for K, V in pairs(v) do
---             print("    " .. K, V)
---         end
---         print("}")
---     else
---         print(k, v)
---     end
--- end
-print(getGridCoordinate(home.x, home.y).x, getGridCoordinate(home.x, home.y).y)
 
 local mouse = function(event)
-    -- home.x = event.x
-    -- home.y = event.y
-    if (findInGrid("first", event.x, event.y, 100, 100, home, nil)) then
-        home:setFillColor(0.1, 0.4, 0)
-        -- print(findInGrid("first", event.x, event.y, 100, 100, home, nil).x)
-    else
-        home:setFillColor(0.3, 0, 0.1)
-    end
     updateInGrid(home)
 end
 Runtime:addEventListener("mouse", mouse)
