@@ -12,6 +12,7 @@ rtn.createAnt = function(home, backGroup)
     ants[#ants]:setFillColor(0, 0, 0)
     ants[#ants].type = "ant"
     ants[#ants].carrying = nil
+    ants[#ants].currentSpeedVariant = 1
     ants[#ants].target = {
         x = home.x,
         y = home.y
@@ -69,6 +70,12 @@ rtn.moveTowardTarget = function(object)
         end
         -- reset the speed
         currentSpeed = math.min(180 / (turnAmount + 1) / 10, currentSpeed)
+        -- currently going extra fast or slow
+        local randomSpeed = math.random(0, 120)
+        if (randomSpeed == math.random(0, 120)) then
+            object.currentSpeedVariant = randomSpeed / 120 + 0.5
+        end
+        currentSpeed = currentSpeed * object.currentSpeedVariant
         -- move the ant
         object.x = object.x + math.sin(math.rad(object.rotation)) * currentSpeed
         object.y = object.y - math.cos(math.rad(object.rotation)) * currentSpeed
