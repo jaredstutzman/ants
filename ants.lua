@@ -1,3 +1,4 @@
+local gridSystem = require("grid")
 local rtn = {}
 -- create the ants
 local antMaxSpeed = 1
@@ -9,6 +10,7 @@ rtn.ants = ants
 rtn.createAnt = function(home, backGroup)
     ants[#ants + 1] = display.newRect(home.x, home.y, 5, 15)
     ants[#ants]:setFillColor(0, 0, 0)
+    ants[#ants].type = "ant"
     ants[#ants].target = {
         x = home.x,
         y = home.y
@@ -72,6 +74,24 @@ rtn.moveTowardTarget = function()
             ants[i].sightFeild.x = head.x
             ants[i].sightFeild.y = head.y
             ants[i].sightFeild.rotation = ants[i].rotation
+        end
+    end
+end
+rtn.canSee = function(object, targetObj, type)
+    if (gridSystem.findInGrid("first", object.x, object.y, antSightRange * 2, antSightRange * 2, targetObj, type)) then
+        local head = {}
+        head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
+        head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
+        local distance = math.sqrt((head.x - targetObj.x) ^ 2 + (head.y - targetObj.y) ^ 2)
+        if (distance <= antSightRange) then
+            local targetAngle = (math.deg(math.atan2(targetObj.y - object.y, targetObj.x - object.x)) + 90)
+            local angleDif = math.abs(targetAngle - object.rotation)
+            if (angleDif > 180) then
+                angleDif = 360 - angleDif
+            end
+            if (angleDif < antFOV / 2) then
+                return true
+            end
         end
     end
 end

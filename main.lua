@@ -31,6 +31,7 @@ local mouse = function(event)
     antSystem.ants[1].target.type = "location"
     -- ants[1].target.rotation = math.deg(math.atan2(event.y - ants[1].y, event.x - ants[1].x)) + 90
     -- ants[1].target.type = "direction"
+    print(antSystem.canSee(antSystem.ants[1], home))
 end
 Runtime:addEventListener("mouse", mouse)
 Runtime:addEventListener("enterFrame", update)
