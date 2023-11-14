@@ -28,18 +28,36 @@ local update = function()
     ----------
     tickCount = tickCount + 1
     for i = 1, #antSystem.ants do
-        local newTarget = antSystem.randomTarget(antSystem.ants[i])
+        -- if nothing else do random
         if (tickCount % 120 == 0) then
-            antSystem.ants[i].target.type = "rotation"
-            antSystem.ants[i].target.rotation = newTarget
+            local newTarget = antSystem.randomTarget(antSystem.ants[i])
+            -- antSystem.ants[i].target.type = "rotation"
+            -- antSystem.ants[i].target.rotation = newTarget
         end
+        -- does the ant have food
         if (antSystem.ants[i].carrying) then
+            -- posibly go home
             if (antSystem.canSee(antSystem.ants[i], home)) then
-
+                antSystem.ants[i].target.type = "location"
+                antSystem.ants[i].target.x = home.x
+                antSystem.ants[i].target.y = home.y
+            else
+                -- else follow the trail home
+                if (antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_food")) then
+                end
             end
+        else
         end
         -- ants seek the target
         antSystem.moveTowardTarget(antSystem.ants[i])
+        -- drop pheromone
+        if (tickCount % 4 == 0) then
+            if (antSystem.ants[i].carrying) then
+                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_home", tickCount, backGroup)
+            else
+                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_food", tickCount, backGroup)
+            end
+        end
     end
 end
 

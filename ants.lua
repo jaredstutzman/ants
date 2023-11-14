@@ -7,6 +7,8 @@ local antSightRange = 15
 local antMaxTurnSpeed = 5
 local ants = {}
 rtn.ants = ants
+local pheromone = {}
+rtn.pheromone = pheromone
 rtn.createAnt = function(home, backGroup)
     ants[#ants + 1] = display.newRect(home.x, home.y, 5, 15)
     ants[#ants]:setFillColor(0, 0, 0)
@@ -26,6 +28,15 @@ rtn.createAnt = function(home, backGroup)
     ants[#ants].sightFeild.y = head.y
     ants[#ants].sightFeild.rotation = ants[#ants].rotation
     return ants[#ants]
+end
+rtn.dropPheromone = function(object, type, createTime, backGroup)
+    local tail = {}
+    tail.x = object.x - object.height / 2 * math.sin(math.rad(object.rotation))
+    tail.y = object.y + object.height / 2 * math.cos(math.rad(object.rotation))
+    pheromone[#pheromone + 1] = display.newCircle(backGroup, tail.x, tail.y, object.width * 0.2)
+    pheromone[#pheromone]:setFillColor(0.5, 0.6, 1)
+    pheromone[#pheromone].createTime = createTime
+    pheromone[#pheromone].type = type
 end
 rtn.randomTarget = function(object)
     local randomAngleDif = math.ceil(math.random(0, 180) ^ 3 / 32400)
