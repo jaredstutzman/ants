@@ -18,9 +18,29 @@ local mouse = {
     x = 0,
     y = 0
 }
+local tickCount = 0
 local update = function()
-    -- ants seek the target
-    antSystem.moveTowardTarget()
+    -- if the ant has food target
+    -- if it sees home the target should be home
+    -- else the target should be pheromone trail home
+    -- else if the ant sees food the target should be food
+    -- else the target should be a random direction
+    ----------
+    tickCount = tickCount + 1
+    for i = 1, #antSystem.ants do
+        local newTarget = antSystem.randomTarget(antSystem.ants[i])
+        if (tickCount % 120 == 0) then
+            antSystem.ants[i].target.type = "rotation"
+            antSystem.ants[i].target.rotation = newTarget
+        end
+        if (antSystem.ants[i].carrying) then
+            if (antSystem.canSee(antSystem.ants[i], home)) then
+
+            end
+        end
+        -- ants seek the target
+        antSystem.moveTowardTarget(antSystem.ants[i])
+    end
 end
 
 local mouse = function(event)
