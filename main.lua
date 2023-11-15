@@ -121,6 +121,7 @@ local mouse = function(event)
     gridSystem.updateInGrid(home)
     antSystem.ants[1].target.x = event.x
     antSystem.ants[1].target.y = event.y
+    antSystem.ants[1].target.object = nil
     antSystem.ants[1].target.type = "location"
     -- ants[1].target.rotation = math.deg(math.atan2(event.y - ants[1].y, event.x - ants[1].x)) + 90
     -- ants[1].target.type = "direction"
