@@ -58,7 +58,7 @@ rtn.moveTowardTarget = function(object)
             local head = {}
             head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
             head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
-            local targetDistance = math.sqrt((head.x - ants[1].target.x) ^ 2 + (head.y - ants[1].target.y) ^ 2)
+            local targetDistance = math.getDistance(head, ants[1].target)
             -- set ant speed
             currentSpeed = math.min(antMaxSpeed, targetDistance / 10)
         end
@@ -110,7 +110,7 @@ rtn.canSee = function(object, targetObj, type)
             local head = {}
             head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
             head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
-            local distance = math.sqrt((head.x - objectSeen[i].x) ^ 2 + (head.y - objectSeen[i].y) ^ 2)
+            local distance = math.getDistance(head, objectSeen[i])
             if (distance <= antSightRange) then
                 local targetAngle = (math.deg(math.atan2(objectSeen[i].y - object.y, objectSeen[i].x - object.x)) + 90)
                 local angleDif = math.abs(targetAngle - object.rotation)

@@ -1,3 +1,10 @@
+if (type(math.getDistance) == "function") then
+    error("attempt to redefine math.getDistance in main.lua")
+end
+math.getDistance = function(obj1, obj2)
+    return math.sqrt((obj1.x - obj2.x) ^ 2 + (obj1.y - obj2.y) ^ 2)
+end
+
 local gridSystem = require("grid")
 local antSystem = require("ants")
 -- the back ground stuff
@@ -62,7 +69,7 @@ local update = function()
             -- pick up food it is not picked up or at home already
             local food = antSystem.canSee(antSystem.ants[i], nil, "food")
             if (food and food.carrier == nil) then
-                local distance = math.sqrt((home.x - food.x) ^ 2 + (home.y - food.y) ^ 2)
+                local distance = math.getDistance(home, food)
                 if (distance >= home.path.radius) then
                     antSystem.ants[i].target.type = "location"
                     antSystem.ants[i].target.object = food
@@ -79,8 +86,7 @@ local update = function()
             local head = {}
             head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
             head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
-            local distance = math.sqrt((antSystem.ants[i].target.object.x - head.x) ^ 2 +
-                                           (antSystem.ants[i].target.object.y - head.y) ^ 2)
+            local distance = math.getDistance(head, antSystem.ants[i].target.object)
             if (distance < 0.1) then
                 antSystem.ants[i].carrying = antSystem.ants[i].target.object
                 antSystem.ants[i].carrying.carrier = antSystem.ants[i]
@@ -99,7 +105,7 @@ local update = function()
             local head = {}
             head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
             head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
-            local distance = math.sqrt((head.x - home.x) ^ 2 + (head.y - home.y) ^ 2)
+            local distance = math.getDistance(home, head)
             if (distance <= home.path.radius) then
                 antSystem.ants[i].carrying.carrier = nil
                 antSystem.ants[i].carrying = nil
