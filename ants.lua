@@ -35,6 +35,9 @@ rtn.dropPheromone = function(object, type, createTime, backGroup)
     tail.y = object.y + object.height / 2 * math.cos(math.rad(object.rotation))
     pheromone[#pheromone + 1] = display.newCircle(backGroup, tail.x, tail.y, object.width * 0.2)
     pheromone[#pheromone]:setFillColor(0.5, 0.6, 1)
+    if (type == "pheromone_finding_home") then
+        pheromone[#pheromone]:setFillColor(0.8, 0.4, 0.3)
+    end
     pheromone[#pheromone].createTime = createTime
     pheromone[#pheromone].type = type
 end
