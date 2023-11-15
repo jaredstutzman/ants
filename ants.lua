@@ -100,19 +100,21 @@ rtn.moveTowardTarget = function(object)
     end
 end
 rtn.canSee = function(object, targetObj, type)
-    if (gridSystem.findInGrid("first", object.x, object.y, antSightRange * 2, antSightRange * 2, targetObj, type)) then
+    local objectSeen = gridSystem.findInGrid("first", object.x, object.y, antSightRange * 2, antSightRange * 2,
+        targetObj, type)
+    if (objectSeen) then
         local head = {}
         head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
         head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
-        local distance = math.sqrt((head.x - targetObj.x) ^ 2 + (head.y - targetObj.y) ^ 2)
+        local distance = math.sqrt((head.x - objectSeen.x) ^ 2 + (head.y - objectSeen.y) ^ 2)
         if (distance <= antSightRange) then
-            local targetAngle = (math.deg(math.atan2(targetObj.y - object.y, targetObj.x - object.x)) + 90)
+            local targetAngle = (math.deg(math.atan2(objectSeen.y - object.y, objectSeen.x - object.x)) + 90)
             local angleDif = math.abs(targetAngle - object.rotation)
             if (angleDif > 180) then
                 angleDif = 360 - angleDif
             end
             if (angleDif < antFOV / 2) then
-                return true
+                return objectSeen
             end
         end
     end
