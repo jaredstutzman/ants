@@ -111,6 +111,9 @@ rtn.canSee = function(object, targetObj, type)
             head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
             head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
             local distance = math.getDistance(head, objectSeen[i])
+            if (objectSeen[i].path.radius) then
+                distance = distance - objectSeen[i].path.radius
+            end
             if (distance <= antSightRange) then
                 local targetAngle = (math.deg(math.atan2(objectSeen[i].y - object.y, objectSeen[i].x - object.x)) + 90)
                 local angleDif = math.abs(targetAngle - object.rotation)
