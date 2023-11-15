@@ -21,14 +21,18 @@ rtn.createAnt = function(home)
         y = home.y
     }
     local headDirection = math.rad(ants[#ants].rotation)
-    local head = {}
-    head.x = ants[#ants].x + ants[#ants].height / 2 * math.sin(headDirection)
-    head.y = ants[#ants].y - ants[#ants].height / 2 * math.cos(headDirection)
+    local head = rtn.getHead(ants[#ants])
     ants[#ants].sightFeild = display.newImageRect(_G.backGroup, "pie.png", 30, 30)
     ants[#ants].sightFeild.x = head.x
     ants[#ants].sightFeild.y = head.y
     ants[#ants].sightFeild.rotation = ants[#ants].rotation
     return ants[#ants]
+end
+rtn.getHead = function(object)
+    local head = {}
+    head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
+    head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
+    return head
 end
 rtn.dropPheromone = function(object, type, createTime)
     local tail = {}
@@ -57,9 +61,7 @@ rtn.moveTowardTarget = function(object)
         local currentSpeed = antMaxSpeed
         if (object.target.type == "location") then
             object.target.rotation = (math.deg(math.atan2(object.target.y - object.y, object.target.x - object.x)) + 90)
-            local head = {}
-            head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
-            head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
+            local head = rtn.getHead(object)
             local targetDistance = math.getDistance(head, ants[1].target)
             -- set ant speed
             currentSpeed = math.min(antMaxSpeed, targetDistance / 10)
@@ -96,9 +98,7 @@ rtn.moveTowardTarget = function(object)
         object.x = object.x + math.sin(math.rad(object.rotation)) * currentSpeed
         object.y = object.y - math.cos(math.rad(object.rotation)) * currentSpeed
         -- show the FOV
-        local head = {}
-        head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
-        head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
+        local head = rtn.getHead(object)
         object.sightFeild.x = head.x
         object.sightFeild.y = head.y
         object.sightFeild.rotation = object.rotation
@@ -110,9 +110,7 @@ rtn.canSee = function(object, targetObj, type, returnAll)
     if (objectSeen) then
         local allObject = {}
         for i = 1, #objectSeen do
-            local head = {}
-            head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
-            head.y = object.y - object.height / 2 * math.cos(math.rad(object.rotation))
+            local head = rtn.getHead(object)
             local distance = math.getDistance(head, objectSeen[i])
             if (objectSeen[i].path.radius) then
                 distance = distance - objectSeen[i].path.radius

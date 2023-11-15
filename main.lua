@@ -73,11 +73,7 @@ local update = function()
                     antSystem.ants[i].target.rotation = antSystem.ants[i].rotation + 180
                     antSystem.ants[i].lastImportantDecisionTime = tickCount
                 elseif (pheromone and #pheromone > 0) then
-                    local head = {}
-                    head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 *
-                                 math.sin(math.rad(antSystem.ants[i].rotation))
-                    head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 *
-                                 math.cos(math.rad(antSystem.ants[i].rotation))
+                    local head = antSystem.getHead(antSystem.ants[i])
                     local farthest = pheromone[1]
                     local farthestDistance = math.getDistance(farthest, head)
                     for i = 1, #pheromone do
@@ -114,9 +110,7 @@ local update = function()
         -- pick up food if close enough
         if (antSystem.ants[i].target and antSystem.ants[i].target.object and antSystem.ants[i].target.object.type ==
             "food" and antSystem.ants[i].target.object.carrier == nil) then
-            local head = {}
-            head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
-            head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
+            local head = antSystem.getHead(antSystem.ants[i])
             local distance = math.getDistance(head, antSystem.ants[i].target.object)
             if (distance < 0.1) then
                 antSystem.ants[i].carrying = antSystem.ants[i].target.object
@@ -126,18 +120,14 @@ local update = function()
         end
         -- picked up food should move with ant
         if (antSystem.ants[i].carrying) then
-            local head = {}
-            head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
-            head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
+            local head = antSystem.getHead(antSystem.ants[i])
             antSystem.ants[i].carrying.x = head.x
             antSystem.ants[i].carrying.y = head.y
             gridSystem.updateInGrid(antSystem.ants[i].carrying)
         end
         -- if ant is home drop food
         if (antSystem.ants[i].carrying) then
-            local head = {}
-            head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
-            head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
+            local head = antSystem.getHead(antSystem.ants[i])
             local distance = math.getDistance(home, head)
             if (distance <= home.path.radius) then
                 antSystem.ants[i].carrying.carrier = nil
