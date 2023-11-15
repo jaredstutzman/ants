@@ -106,6 +106,7 @@ local update = function()
             head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))
             antSystem.ants[i].carrying.x = head.x
             antSystem.ants[i].carrying.y = head.y
+            gridSystem.updateInGrid(antSystem.ants[i].carrying)
         end
         -- if ant is home drop food
         if (antSystem.ants[i].carrying) then
