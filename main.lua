@@ -8,12 +8,12 @@ end
 local gridSystem = require("grid")
 local antSystem = require("ants")
 -- the back ground stuff
-local backGroup = display.newGroup()
-local background = display.newRect(backGroup, 0, 0, display.actualContentWidth, display.actualContentHeight)
+_G.backGroup = display.newGroup()
+local background = display.newRect(_G.backGroup, 0, 0, display.actualContentWidth, display.actualContentHeight)
 background.x = display.contentCenterX
 background.y = display.contentCenterY
 
-local home = display.newCircle(backGroup, display.contentCenterX, display.contentCenterY, 20)
+local home = display.newCircle(_G.backGroup, display.contentCenterX, display.contentCenterY, 20)
 home:setFillColor(0.3, 0, 0.1)
 gridSystem.addToGrid(home)
 
@@ -21,14 +21,14 @@ local food = {}
 for i = 1, 20 do
     local foodX = math.random(0, display.contentWidth)
     local foodY = math.random(0, display.contentHeight)
-    food[#food + 1] = display.newCircle(backGroup, foodX, foodY, 5)
+    food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 5)
     food[#food]:setFillColor(0.8, 0.7, 0.5)
     food[#food].type = "food"
     gridSystem.addToGrid(food[#food])
 end
 
 for i = 1, 1 do
-    antSystem.createAnt(home, backGroup)
+    antSystem.createAnt(home)
 end
 
 local mouse = {
@@ -114,9 +114,9 @@ local update = function()
         -- drop pheromone
         if (tickCount % 4 == 0) then
             if (antSystem.ants[i].carrying) then
-                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_home", tickCount, backGroup)
+                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_home", tickCount)
             else
-                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_food", tickCount, backGroup)
+                antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_food", tickCount)
             end
         end
     end

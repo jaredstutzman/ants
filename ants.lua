@@ -9,7 +9,7 @@ local ants = {}
 rtn.ants = ants
 local pheromone = {}
 rtn.pheromone = pheromone
-rtn.createAnt = function(home, backGroup)
+rtn.createAnt = function(home)
     ants[#ants + 1] = display.newRect(home.x, home.y, 5, 15)
     ants[#ants]:setFillColor(0, 0, 0)
     ants[#ants].type = "ant"
@@ -23,17 +23,17 @@ rtn.createAnt = function(home, backGroup)
     local head = {}
     head.x = ants[#ants].x + ants[#ants].height / 2 * math.sin(headDirection)
     head.y = ants[#ants].y - ants[#ants].height / 2 * math.cos(headDirection)
-    ants[#ants].sightFeild = display.newImageRect(backGroup, "pie.png", 30, 30)
+    ants[#ants].sightFeild = display.newImageRect(_G.backGroup, "pie.png", 30, 30)
     ants[#ants].sightFeild.x = head.x
     ants[#ants].sightFeild.y = head.y
     ants[#ants].sightFeild.rotation = ants[#ants].rotation
     return ants[#ants]
 end
-rtn.dropPheromone = function(object, type, createTime, backGroup)
+rtn.dropPheromone = function(object, type, createTime)
     local tail = {}
     tail.x = object.x - object.height / 2 * math.sin(math.rad(object.rotation))
     tail.y = object.y + object.height / 2 * math.cos(math.rad(object.rotation))
-    pheromone[#pheromone + 1] = display.newCircle(backGroup, tail.x, tail.y, object.width * 0.2)
+    pheromone[#pheromone + 1] = display.newCircle(_G.backGroup, tail.x, tail.y, object.width * 0.2)
     pheromone[#pheromone]:setFillColor(0.5, 0.6, 1)
     if (type == "pheromone_finding_home") then
         pheromone[#pheromone]:setFillColor(0.8, 0.4, 0.3)
