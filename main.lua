@@ -15,10 +15,11 @@ background.y = display.contentCenterY
 
 local home = display.newCircle(_G.backGroup, display.contentCenterX, display.contentCenterY, 20)
 home:setFillColor(0.3, 0, 0.1)
+home.type = "home"
 gridSystem.addToGrid(home)
 
 local food = {}
-for i = 1, 20 do
+for i = 1, 50 do
     local foodX = math.random(0, display.contentWidth)
     local foodY = math.random(0, display.contentHeight)
     food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 5)
@@ -46,7 +47,7 @@ local update = function()
     tickCount = tickCount + 1
     for i = 1, #antSystem.ants do
         -- if nothing else do random
-        if (tickCount % 120 == 0) then
+        if (tickCount % 120 == 0 and tickCount > antSystem.ants[i].lastImportantDecisionTime + 100) then
             local newTarget = antSystem.randomTarget(antSystem.ants[i])
             antSystem.ants[i].target.type = "rotation"
             antSystem.ants[i].target.rotation = newTarget
@@ -60,15 +61,38 @@ local update = function()
                 antSystem.ants[i].target.object = home
                 antSystem.ants[i].target.x = home.x
                 antSystem.ants[i].target.y = home.y
+                antSystem.ants[i].lastImportantDecisionTime = tickCount
             else
                 -- else follow the trail home
                 -- but first start to turn around
+                local pheromone = antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_food", true)
                 if (antSystem.ants[i].justPickUpFood) then
                     antSystem.ants[i].justPickUpFood = nil
                     antSystem.ants[i].target.type = "rotation"
                     antSystem.ants[i].target.object = nil
                     antSystem.ants[i].target.rotation = antSystem.ants[i].rotation + 180
-                elseif (antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_food")) then
+                    antSystem.ants[i].lastImportantDecisionTime = tickCount
+                elseif (pheromone and #pheromone > 0) then
+                    local head = {}
+                    head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 *
+                                 math.sin(math.rad(antSystem.ants[i].rotation))
+                    head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 *
+                                 math.cos(math.rad(antSystem.ants[i].rotation))
+                    local farthest = pheromone[1]
+                    local farthestDistance = math.getDistance(farthest, head)
+                    for i = 1, #pheromone do
+                        local distance = math.getDistance(pheromone[i], head)
+                        if (distance < farthestDistance and pheromone[i].type == "pheromone_finding_food") then
+                            farthest = pheromone[i]
+                            farthestDistance = distance
+                        end
+                    end
+                    local targetDirection = (math.deg(math.atan2(farthest.y - antSystem.ants[i].y,
+                        farthest.x - antSystem.ants[i].x)) + 90)
+                    antSystem.ants[i].target.type = "rotation"
+                    antSystem.ants[i].target.object = farthest
+                    antSystem.ants[i].target.rotation = targetDirection
+                    antSystem.ants[i].lastImportantDecisionTime = tickCount
                 end
             end
         else
@@ -81,14 +105,15 @@ local update = function()
                     antSystem.ants[i].target.object = food
                     antSystem.ants[i].target.x = food.x
                     antSystem.ants[i].target.y = food.y
+                    antSystem.ants[i].lastImportantDecisionTime = tickCount
                 end
             end
         end
         -- ants seek the target
         antSystem.moveTowardTarget(antSystem.ants[i])
         -- pick up food if close enough
-        if (antSystem.ants[i].target and antSystem.ants[i].target.object and antSystem.ants[i].target.object.carrier ==
-            nil) then
+        if (antSystem.ants[i].target and antSystem.ants[i].target.object and antSystem.ants[i].target.object.type ==
+            "food" and antSystem.ants[i].target.object.carrier == nil) then
             local head = {}
             head.x = antSystem.ants[i].x + antSystem.ants[i].height / 2 * math.sin(math.rad(antSystem.ants[i].rotation))
             head.y = antSystem.ants[i].y - antSystem.ants[i].height / 2 * math.cos(math.rad(antSystem.ants[i].rotation))

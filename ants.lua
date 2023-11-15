@@ -15,6 +15,7 @@ rtn.createAnt = function(home)
     ants[#ants].type = "ant"
     ants[#ants].carrying = nil
     ants[#ants].currentSpeedVariant = 1
+    ants[#ants].lastImportantDecisionTime = 1
     ants[#ants].target = {
         x = home.x,
         y = home.y
@@ -40,6 +41,7 @@ rtn.dropPheromone = function(object, type, createTime)
     end
     pheromone[#pheromone].createTime = createTime
     pheromone[#pheromone].type = type
+    gridSystem.addToGrid(pheromone[#pheromone])
 end
 rtn.randomTarget = function(object)
     local randomAngleDif = math.ceil(math.random(0, 180) ^ 3 / 32400)
@@ -102,10 +104,11 @@ rtn.moveTowardTarget = function(object)
         object.sightFeild.rotation = object.rotation
     end
 end
-rtn.canSee = function(object, targetObj, type)
+rtn.canSee = function(object, targetObj, type, returnAll)
     local objectSeen = gridSystem.findInGrid("all", object.x, object.y, antSightRange * 2, antSightRange * 2, targetObj,
         type)
     if (objectSeen) then
+        local allObject = {}
         for i = 1, #objectSeen do
             local head = {}
             head.x = object.x + object.height / 2 * math.sin(math.rad(object.rotation))
@@ -121,9 +124,16 @@ rtn.canSee = function(object, targetObj, type)
                     angleDif = 360 - angleDif
                 end
                 if (angleDif < antFOV / 2) then
-                    return objectSeen[i]
+                    if (returnAll) then
+                        allObject[#allObject + 1] = objectSeen[i]
+                    else
+                        return objectSeen[i]
+                    end
                 end
             end
+        end
+        if (returnAll) then
+            return allObject
         end
     end
 end
