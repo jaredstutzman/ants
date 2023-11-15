@@ -62,7 +62,13 @@ local update = function()
                 antSystem.ants[i].target.y = home.y
             else
                 -- else follow the trail home
-                if (antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_food")) then
+                -- but first start to turn around
+                if (antSystem.ants[i].justPickUpFood) then
+                    antSystem.ants[i].justPickUpFood = nil
+                    antSystem.ants[i].target.type = "rotation"
+                    antSystem.ants[i].target.object = nil
+                    antSystem.ants[i].target.rotation = antSystem.ants[i].rotation + 180
+                elseif (antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_food")) then
                 end
             end
         else
@@ -90,6 +96,7 @@ local update = function()
             if (distance < 0.1) then
                 antSystem.ants[i].carrying = antSystem.ants[i].target.object
                 antSystem.ants[i].carrying.carrier = antSystem.ants[i]
+                antSystem.ants[i].justPickUpFood = true
             end
         end
         -- picked up food should move with ant
