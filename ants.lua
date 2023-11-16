@@ -62,7 +62,7 @@ rtn.moveTowardTarget = function(object)
         if (object.target.type == "location") then
             object.target.rotation = (math.deg(math.atan2(object.target.y - object.y, object.target.x - object.x)) + 90)
             local head = rtn.getHead(object)
-            local targetDistance = math.getDistance(head, ants[1].target)
+            local targetDistance = math.getDistance(head, object.target)
             -- set ant speed
             currentSpeed = math.min(antMaxSpeed, targetDistance / 10)
         end
@@ -95,6 +95,10 @@ rtn.moveTowardTarget = function(object)
             object.currentSpeedVariant = randomSpeed / 120 + 0.5
         end
         currentSpeed = currentSpeed * object.currentSpeedVariant
+        -- the ant may need to back up to reach some food
+        if (object.target.type == "location" and math.getDistance(object, object.target) < object.height / 2 - 0.1) then
+            currentSpeed = -currentSpeed
+        end
         -- move the ant
         object.x = object.x + math.sin(math.rad(object.rotation)) * currentSpeed
         object.y = object.y - math.cos(math.rad(object.rotation)) * currentSpeed
