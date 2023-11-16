@@ -67,6 +67,7 @@ rtn.moveTowardTarget = function(object)
             currentSpeed = math.min(antMaxSpeed, targetDistance / 10)
         end
         -- set the ants rotation
+        object.rotation = object.rotation % 360
         local turnAmount = 0
         local targetAngle = object.target.rotation % 360
         turnAmount = math.abs(targetAngle - object.rotation)
