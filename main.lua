@@ -28,7 +28,7 @@ for i = 1, 50 do
     gridSystem.addToGrid(food[#food])
 end
 
-for i = 1, 1 do
+for i = 1, 10 do
     antSystem.createAnt(home)
 end
 
@@ -76,18 +76,49 @@ local update = function()
                     local head = antSystem.getHead(antSystem.ants[i])
                     local farthest = pheromone[1]
                     local farthestDistance = math.getDistance(farthest, head)
-                    for i = 1, #pheromone do
-                        local distance = math.getDistance(pheromone[i], head)
-                        if (distance < farthestDistance and pheromone[i].type == "pheromone_finding_food") then
-                            farthest = pheromone[i]
-                            farthestDistance = distance
+                    local leftPheromone = {}
+                    local rightPheromone = {}
+                    for f = 1, #pheromone do
+                        if (pheromone[f].type == "pheromone_finding_food") then
+                            local distance = math.getDistance(pheromone[f], head)
+                            if (distance < farthestDistance) then
+                                farthest = pheromone[f]
+                                farthestDistance = distance
+                            end
+                            -- is the pheromone on the right or the left
+                            local pheromoneAngle = (math.deg(
+                                math.atan2(pheromone[f].y - antSystem.ants[i].y, pheromone[f].x - antSystem.ants[i].x)) +
+                                                       90) % 360
+                            -- p90, a0 is to the right and 
+                            local isToTheRight = math.abs(pheromoneAngle - antSystem.ants[i].rotation % 360 + 90) > 90
+                            if (isToTheRight) then
+                                rightPheromone[#rightPheromone + 1] = pheromone[f]
+                            else
+                                leftPheromone[#leftPheromone + 1] = pheromone[f]
+                            end
                         end
+                    end
+                    -- choose a direction to follow
+                    local targetSide = rightPheromone
+                    if (#leftPheromone > #rightPheromone) then
+                        targetSide = leftPheromone
+                    end
+                    -- travel in the average direction of the pheromone group
+                    local thisAngle = (math.deg(math.atan2(pheromone[1].y - antSystem.ants[i].y,
+                        pheromone[1].x - antSystem.ants[i].x)) + 90)
+                    local averageAngle = thisAngle
+                    for f = 2, #pheromone do
+                        thisAngle = (math.deg(math.atan2(pheromone[f].y - antSystem.ants[i].y,
+                            pheromone[f].x - antSystem.ants[i].x)) + 90)
+                        local relitave = (thisAngle + 180 - ((averageAngle + 180) % 360 - 180)) % 360 - 180
+                        local thisAverage = relitave / f
+                        averageAngle = (averageAngle + thisAverage) % 360
                     end
                     local targetDirection = (math.deg(math.atan2(farthest.y - antSystem.ants[i].y,
                         farthest.x - antSystem.ants[i].x)) + 90)
                     antSystem.ants[i].target.type = "rotation"
                     antSystem.ants[i].target.object = farthest
-                    antSystem.ants[i].target.rotation = targetDirection
+                    antSystem.ants[i].target.rotation = averageAngle
                     antSystem.ants[i].lastImportantDecisionTime = tickCount
                 end
             end
@@ -142,6 +173,7 @@ local update = function()
                 antSystem.dropPheromone(antSystem.ants[i], "pheromone_finding_food", tickCount)
             end
         end
+        -- fade and spread pheromone
     end
 end
 
