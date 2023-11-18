@@ -174,6 +174,23 @@ local update = function()
             end
         end
         -- fade and spread pheromone
+        if (#antSystem.pheromone > 0) then
+            for n = math.ceil(#antSystem.pheromone / 20), 1, -1 do
+                -- fade the particle
+                local index = math.random(1, #antSystem.pheromone)
+                local pheromone = antSystem.pheromone[index]
+                pheromone.alpha = pheromone.alpha - 0.003
+                -- nudge particle in some direction
+                pheromone.x = pheromone.x + math.random(1, 3) * 0.1 - 0.2
+                pheromone.y = pheromone.y + math.random(1, 3) * 0.1 - 0.2
+                -- eventually delete it
+                if (pheromone.alpha <= 0) then
+                    gridSystem.removeFromGrid(pheromone)
+                    table.remove(antSystem.pheromone, index)
+                    display.remove(pheromone)
+                end
+            end
+        end
     end
 end
 
