@@ -47,11 +47,25 @@ local update = function()
     tickCount = tickCount + 1
     for i = 1, #antSystem.ants do
         -- if nothing else do random
-        if (tickCount % 120 == 0 and tickCount > antSystem.ants[i].lastImportantDecisionTime + 100) then
-            local newTarget = antSystem.randomTarget(antSystem.ants[i])
-            antSystem.ants[i].target.type = "rotation"
-            antSystem.ants[i].target.rotation = newTarget
-            antSystem.ants[i].target.object = nil
+        if (tickCount % 30 == 0) then
+            local shouldWander = false
+            local waitedOnImportant = tickCount > antSystem.ants[i].lastImportantDecisionTime + 100
+            if (antSystem.ants[i].target.object) then
+                local followingHomePheromone = antSystem.ants[i].target.object.type == "pheromone_finding_home"
+                local followingFoodPheromone = antSystem.ants[i].target.object.type == "pheromone_finding_food"
+                local followingPheromone = followingHomePheromone or followingFoodPheromone
+                local goingHome = antSystem.ants[i].target.object.type == "home"
+                local findingFood = antSystem.ants[i].target.object.type == "food"
+                if (waitedOnImportant or followingPheromone or goingHome or findingFood) then
+                    shouldWander = true
+                end
+            end
+            if (waitedOnImportant or shouldWander) then
+                local newTarget = antSystem.randomTarget(antSystem.ants[i])
+                antSystem.ants[i].target.type = "rotation"
+                antSystem.ants[i].target.rotation = newTarget
+                antSystem.ants[i].target.object = nil
+            end
         end
         -- does the ant have food
         if (antSystem.ants[i].carrying) then
