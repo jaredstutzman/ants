@@ -49,6 +49,7 @@ local update = function()
     -- if it sees home the target should be home
     -- else the target should be pheromone trail home
     -- else if the ant sees food that does not have a carrier the target should be food
+    -- else if the ant can see it the target should be pheromone trail to the food
     -- else the target should be a random direction
     ----------
     tickCount = tickCount + 1
@@ -152,17 +153,43 @@ local update = function()
                 end
             end
         else
-            -- pick up food it is not picked up or at home already
+            -- look for food to carrie
             local food = antSystem.canSee(antSystem.ants[i], nil, "food")
+            local canSeeFood = false
             if (food and food.carrier == nil) then
                 local distance = math.getDistance(home, food)
                 if (distance >= home.path.radius) then
-                    antSystem.ants[i].target.type = "location"
-                    antSystem.ants[i].target.object = food
-                    antSystem.ants[i].target.x = food.x
-                    antSystem.ants[i].target.y = food.y
-                    antSystem.ants[i].lastImportantDecisionTime = tickCount
+                    canSeeFood = true
                 end
+            end
+            -- look for pheromone to fallow to the food
+            local pheromone = antSystem.canSee(antSystem.ants[i], nil, "pheromone_finding_home", true)
+            local canSeePheromone = false
+            local targetDirection
+            local oldest
+            if (pheromone and #pheromone > 0) then
+                canSeePheromone = true
+                oldest = pheromone[1]
+                for f = 2, #pheromone do
+                    if (pheromone[f].createTime < oldest.createTime) then
+                        oldest = pheromone[f]
+                    end
+                end
+                targetDirection =
+                    (math.deg(math.atan2(oldest.y - antSystem.ants[i].y, oldest.x - antSystem.ants[i].x)) + 90)
+            end
+            -- pick up food it is not picked up or at home already
+            if (canSeeFood) then
+                antSystem.ants[i].target.type = "location"
+                antSystem.ants[i].target.object = food
+                antSystem.ants[i].target.x = food.x
+                antSystem.ants[i].target.y = food.y
+                antSystem.ants[i].lastImportantDecisionTime = tickCount
+            elseif (canSeePheromone) then
+                antSystem.ants[i].target.type = "rotation"
+                antSystem.ants[i].target.object = oldest
+                antSystem.ants[i].target.rotation = targetDirection
+                antSystem.ants[i].lastImportantDecisionTime = tickCount
             end
         end
         -- ants seek the target
