@@ -192,6 +192,21 @@ local update = function()
                 antSystem.ants[i].lastImportantDecisionTime = tickCount
             end
         end
+        -- keep ants in bounds
+        if (math.abs(antSystem.ants[i].x - display.contentCenterX) > display.actualContentWidth / 2) then
+            if (antSystem.ants[i].x - display.contentCenterX > display.actualContentWidth / 2) then
+                antSystem.ants[i].x = display.contentCenterX + display.actualContentWidth / 2
+            else
+                antSystem.ants[i].x = display.contentCenterX - display.actualContentWidth / 2
+            end
+        end
+        if (math.abs(antSystem.ants[i].y - display.contentCenterY) > display.actualContentHeight / 2) then
+            if (antSystem.ants[i].y - display.contentCenterY > display.actualContentHeight / 2) then
+                antSystem.ants[i].y = display.contentCenterY + display.actualContentHeight / 2
+            else
+                antSystem.ants[i].y = display.contentCenterY - display.actualContentHeight / 2
+            end
+        end
         -- ants seek the target
         antSystem.moveTowardTarget(antSystem.ants[i])
         -- pick up food if close enough
