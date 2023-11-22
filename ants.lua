@@ -16,6 +16,7 @@ rtn.createAnt = function(home)
     ants[#ants].carrying = nil
     ants[#ants].currentSpeedVariant = 1
     ants[#ants].lastImportantDecisionTime = 1
+    ants[#ants].lastTurn = 0
     ants[#ants].target = {
         x = home.x,
         y = home.y
@@ -80,9 +81,16 @@ rtn.moveTowardTarget = function(object)
             antMaxTurnSpeed) then
             if ((targetAngle > object.rotation and targetAngle - object.rotation < 180) or object.rotation - targetAngle >
                 180) then
-                object.rotation = object.rotation + antMaxTurnSpeed
+                local turnAcceleration = object.lastTurn - antMaxTurnSpeed
+                local turnAmount = antMaxTurnSpeed + turnAcceleration * 0
+                object.rotation = object.rotation + turnAmount
+                print(turnAmount)
+                object.lastTurn = turnAmount
             else
-                object.rotation = object.rotation - antMaxTurnSpeed
+                local turnAcceleration = object.lastTurn - antMaxTurnSpeed
+                local turnAmount = antMaxTurnSpeed + turnAcceleration * 0
+                object.rotation = object.rotation - turnAmount
+                object.lastTurn = -antMaxTurnSpeed
             end
         else
             object.rotation = targetAngle
