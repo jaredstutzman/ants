@@ -84,7 +84,6 @@ rtn.moveTowardTarget = function(object)
                 local turnAcceleration = object.lastTurn - antMaxTurnSpeed
                 local turnAmount = antMaxTurnSpeed + turnAcceleration * 0
                 object.rotation = object.rotation + turnAmount
-                print(turnAmount)
                 object.lastTurn = turnAmount
             else
                 local turnAcceleration = object.lastTurn - antMaxTurnSpeed
