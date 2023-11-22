@@ -19,13 +19,20 @@ home.type = "home"
 gridSystem.addToGrid(home)
 
 local food = {}
-for i = 1, 50 do
-    local foodX = math.random(0, display.contentWidth)
-    local foodY = math.random(0, display.contentHeight)
-    food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 5)
-    food[#food]:setFillColor(0.8, 0.7, 0.5)
-    food[#food].type = "food"
-    gridSystem.addToGrid(food[#food])
+for i = 1, 3 do
+    local pileLocation = {}
+    pileLocation.x = math.random(0, display.contentWidth)
+    pileLocation.y = math.random(0, display.contentHeight)
+    for pile = 1, 15 do
+        local randomDistance = math.random(1, 40)
+        local randomAngle = math.random(1, 360)
+        local foodX = pileLocation.x + randomDistance * math.sin(math.rad(randomAngle))
+        local foodY = pileLocation.y + randomDistance * math.cos(math.rad(randomAngle))
+        food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 5)
+        food[#food]:setFillColor(0.8, 0.7, 0.5)
+        food[#food].type = "food"
+        gridSystem.addToGrid(food[#food])
+    end
 end
 
 for i = 1, 10 do
