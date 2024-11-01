@@ -19,23 +19,23 @@ home.type = "home"
 gridSystem.addToGrid(home)
 
 local food = {}
-for i = 1, 3 do
+for i = 1, 4 do
     local pileLocation = {}
     pileLocation.x = math.random(0, display.contentWidth)
     pileLocation.y = math.random(0, display.contentHeight)
-    for pile = 1, 15 do
+    for pile = 1, 40 do
         local randomDistance = math.random(1, 40)
         local randomAngle = math.random(1, 360)
         local foodX = pileLocation.x + randomDistance * math.sin(math.rad(randomAngle))
         local foodY = pileLocation.y + randomDistance * math.cos(math.rad(randomAngle))
-        food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 5)
+        food[#food + 1] = display.newCircle(_G.backGroup, foodX, foodY, 2)
         food[#food]:setFillColor(0.8, 0.7, 0.5)
         food[#food].type = "food"
         gridSystem.addToGrid(food[#food])
     end
 end
 
-for i = 1, 10 do
+for i = 1, 400 do
     antSystem.createAnt(home)
 end
 
@@ -246,19 +246,21 @@ local update = function()
         end
         -- fade and spread pheromone
         if (#antSystem.pheromone > 0) then
-            for n = math.ceil(#antSystem.pheromone / 20), 1, -1 do
-                -- fade the particle
-                local index = math.random(1, #antSystem.pheromone)
-                local pheromone = antSystem.pheromone[index]
-                pheromone.alpha = pheromone.alpha - 0.003
-                -- nudge particle in some direction
-                pheromone.x = pheromone.x + math.random(1, 3) * 0.1 - 0.2
-                pheromone.y = pheromone.y + math.random(1, 3) * 0.1 - 0.2
-                -- eventually delete it
-                if (pheromone.alpha <= 0) then
-                    gridSystem.removeFromGrid(pheromone)
-                    table.remove(antSystem.pheromone, index)
-                    display.remove(pheromone)
+            if (tickCount % 10 == 1) then
+                for n = math.ceil(#antSystem.pheromone / 20), 1, -1 do
+                    -- fade the particle
+                    local index = math.random(1, #antSystem.pheromone)
+                    local pheromone = antSystem.pheromone[index]
+                    pheromone.alpha = pheromone.alpha - 0.005
+                    -- nudge particle in some direction
+                    pheromone.x = pheromone.x + math.random(1, 3) * 0.1 - 0.2
+                    pheromone.y = pheromone.y + math.random(1, 3) * 0.1 - 0.2
+                    -- eventually delete it
+                    if (pheromone.alpha <= 0) then
+                        gridSystem.removeFromGrid(pheromone)
+                        table.remove(antSystem.pheromone, index)
+                        display.remove(pheromone)
+                    end
                 end
             end
         end
